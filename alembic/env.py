@@ -1,0 +1,98 @@
+# file: alembic/env.py
+import os
+import sys
+from logging.config import fileConfig
+
+from sqlalchemy import engine_from_config
+from sqlalchemy import pool
+
+from alembic import context
+
+# --- NAYA AUR ZAROORI CODE ---
+# Isse Alembic ko project ka root folder milta hai, taaki woh 'models' 
+# aur 'database' folders se files import kar sake.
+# Path ko Python ke search path mein add karein.
+# Hum '..' ka istemal kar rahe hain kyunki env.py 'alembic' folder ke andar hai.
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Apne project ke Base object ko import karein jo sabhi models ka parent hai.
+from database import Base
+
+# Apne sabhi models ko yahan import karein. Yeh bahut zaroori hai.
+# Agar aap koi model yahan import nahi karenge, toh Alembic uske liye table nahi banayega.
+from models.user_model import User, Role
+from models.book_model import Book, Category, Subcategory
+from models.language_model import Language
+from models.library_management_models import Location, BookCopy, IssuedBook, DigitalAccess
+from models.permission_model import Permission
+from models.request_model import UploadRequest
+from models.log_model import Log
+from models.book_permission_model import BookPermission
+# --- NAYA CODE YAHAN KHATM ---
+
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+
+# --- IS LINE KO BADLA GAYA HAI ---
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+# Alembic ko batayein ki hamare sabhi models ka metadata 'Base.metadata' hai.
+target_metadata = Base.metadata
+# --- BADLAV YAHAN KHATM ---
+
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+
+def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode.
+    (Is function mein koi badlav nahi)
+    """
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode.
+    (Is function mein koi badlav nahi)
+    """
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection, target_metadata=target_metadata
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
