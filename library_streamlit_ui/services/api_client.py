@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 # Aapke FastAPI backend ka URL
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://library-api-nb4f.onrender.com"
 
 def get_session_state():
     """Streamlit ke session state ko access karta hai."""
