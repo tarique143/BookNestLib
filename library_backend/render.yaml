@@ -2,14 +2,13 @@ services:
   - type: web
     name: booknest-backend
     env: python
+    buildCommand: "./library_backend/render-build.sh"
+    startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:10000"
     region: oregon
     plan: free
     runtime: python
     branch: main
     repo: https://github.com/tarique143/BookNestLib
-    rootDir: library_backend
-    buildCommand: "./render-build.sh"
-    startCommand: "alembic stamp head && gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:10000"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.10
+    buildFilter:
+      paths:
+        - library_backend/**
