@@ -13,3 +13,6 @@ services:
     buildFilter:
       paths:
         - library_backend/**
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
