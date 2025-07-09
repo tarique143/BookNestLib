@@ -6,4 +6,4 @@ psycopg2-binary
 pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]
-python-multipartgit rebase --continue
+python-multipart
