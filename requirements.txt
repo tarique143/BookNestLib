@@ -6,3 +6,7 @@ pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
+gunicorn
+sqlalchemy
+psycopg2-binary  
+ 
