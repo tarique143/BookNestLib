@@ -1,10 +1,8 @@
 #!/bin/bash
 
-echo "📦 Installing dependencies from requirements.txt"
+echo "Installing dependencies..."
 pip install -r library_backend/requirements.txt
 
-echo "📁 Moving to backend folder"
 cd library_backend
-
-echo "🗃️ Running alembic..."
+echo "Running alembic stamp..."
 alembic stamp head
