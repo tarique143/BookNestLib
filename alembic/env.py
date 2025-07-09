@@ -1,3 +1,4 @@
+# Postgres sql
 # file: alembic/env.py
 import os
 import sys
@@ -11,15 +12,16 @@ from alembic import context
 # --- NAYA AUR ZAROORI CODE ---
 # Isse Alembic ko project ka root folder milta hai, taaki woh 'models' 
 # aur 'database' folders se files import kar sake.
-# Path ko Python ke search path mein add karein.
-# Hum '..' ka istemal kar rahe hain kyunki env.py 'alembic' folder ke andar hai.
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
+
+# .env se config load karne ke liye
+from dotenv import load_dotenv
+load_dotenv()
 
 # Apne project ke Base object ko import karein jo sabhi models ka parent hai.
 from database import Base
 
 # Apne sabhi models ko yahan import karein. Yeh bahut zaroori hai.
-# Agar aap koi model yahan import nahi karenge, toh Alembic uske liye table nahi banayega.
 from models.user_model import User, Role
 from models.book_model import Book, Category, Subcategory
 from models.language_model import Language
@@ -31,67 +33,50 @@ from models.book_permission_model import BookPermission
 # --- NAYA CODE YAHAN KHATM ---
 
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# Alembic config object
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# Logging setup
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-
-# --- IS LINE KO BADLA GAYA HAI ---
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-# Alembic ko batayein ki hamare sabhi models ka metadata 'Base.metadata' hai.
+# Target metadata for autogeneration
 target_metadata = Base.metadata
-# --- BADLAV YAHAN KHATM ---
-
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-    (Is function mein koi badlav nahi)
-    """
-    url = config.get_main_option("sqlalchemy.url")
+    """Run migrations in 'offline' mode."""
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        raise Exception("DATABASE_URL not found in environment.")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-    (Is function mein koi badlav nahi)
-    """
+    """Run migrations in 'online' mode."""
+    configuration = config.get_section(config.config_ini_section)
+    configuration["sqlalchemy.url"] = os.getenv("DATABASE_URL")  # --- BADLAV YAHAN ---
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
-
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 
 
+# Migration mode check
 if context.is_offline_mode():
     run_migrations_offline()
 else:
