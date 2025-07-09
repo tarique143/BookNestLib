@@ -1,8 +1,13 @@
 services:
   - type: web
-    name: booknestlib-backend
+    name: booknest-backend
     env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      alembic stamp head
-    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:10000
+    plan: free
+    region: oregon
+    repo: https://github.com/tarique143/BookNestLib
+    branch: main
+    buildCommand: "pip install -r library_backend/requirements.txt"
+    startCommand: "cd library_backend && alembic stamp head && gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:10000"
+    buildFilter:
+      paths:
+        - library_backend/**
