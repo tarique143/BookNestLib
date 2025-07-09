@@ -3,6 +3,8 @@ services:
     name: booknest-backend
     env: python
     buildCommand: ./render-build.sh
+    
+
     startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker library_backend.main:app -b 0.0.0.0:10000
     region: oregon
     plan: free
