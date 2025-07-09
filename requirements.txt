@@ -1,4 +1,13 @@
 fastapi
+gunicorn
+uvicorn[standard]
+sqlalchemy
+mysql-connector-python
+pydantic[email]
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+fastapi
 uvicorn[standard]
 sqlalchemy
 mysql-connector-python
@@ -9,4 +18,8 @@ python-multipart
 gunicorn
 sqlalchemy
 psycopg2-binary  
+<<<<<<< HEAD
  
+=======
+ 
+>>>>>>> 2279b70 (Initial commit of BookNestLib – Library Management System)
